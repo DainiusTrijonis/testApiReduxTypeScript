@@ -9,12 +9,13 @@ export interface KITTENSSTATE  {
 }
 const INITIALSTATE:KITTENSSTATE = {
     kittensArray: new Array<Kitten>(),
-    loading:false,
+    loading:true,
 }
 
 export const kittensReducer = (state = INITIALSTATE,  action: { type: string, payload: Kitten[]}) => {
     switch(action.type) {
         case SET_KITTENS: 
+            //console.log(action.payload[0].Name)
             return {kittensArray: action.payload, loading:false}
         default:
             return state   

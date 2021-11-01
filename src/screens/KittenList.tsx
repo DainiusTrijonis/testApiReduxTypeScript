@@ -1,12 +1,10 @@
 import React, {Component} from 'react';
-import {Alert, Button, Image, StyleSheet, Text, View} from 'react-native';
+import {Alert, Button, Image, StyleSheet, Text, View, ScrollView} from 'react-native';
 import { bindActionCreators,Dispatch } from 'redux'
 import {connect} from 'react-redux'
 import {StackNavigationProp } from '@react-navigation/stack';
 import {RootStackParamList} from '../../App'
 import {allReducersState } from '../reducers';
-import axios from 'axios'
-import { Buffer } from "buffer"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as actions from '../actions'
 
@@ -16,19 +14,34 @@ interface Props {
   navigation: KittenListNavigationProp;
   state:allReducersState;
   dispatchActions:typeof actions
-
 };
 class KittenList extends Component<Props> {  
     constructor(props:Props) {
         super(props);
-        this.state = {
-            img:'',
-        }
     }
     async componentDidMount() {
-      this.props.dispatchActions.fetchKittens(30)
+      this.props.dispatchActions.fetchKittens(1)
     }
+
+    renderKittens = (kittensState: Props["state"]["kittens"]["kittensArray"]) => {
+      return(
+        <ScrollView>
+          {kittensState.map((kitten,index) => {
+            return(
+              <View key={index}>
+                <Image
+                    style={{width:200,height:300}}
+                    source= {{uri:  kitten.Image}}
+                />
+              </View>
+            )
+          })}
+        </ScrollView>
+      )
+    }
+
     render() { 
+      const kittensObject = this.props.state.kittens
       return (
         <View>
             <View style={styles.filterContainer}>
@@ -57,12 +70,11 @@ class KittenList extends Component<Props> {
                   </View>
                 </View>
             </View>
-            <View>
-                {/* <Image
-                    style={{width:200,height:300}}
-                    source={{uri:this.state.img}}
-                /> */}
-            </View>
+            {
+              !kittensObject.loading && kittensObject.kittensArray.length ?
+                  this.renderKittens(kittensObject.kittensArray)
+                : <View></View>
+            }
             <View>
             </View>
         </View>
