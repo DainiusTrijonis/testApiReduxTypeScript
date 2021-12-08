@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {Alert, Button, Image, StyleSheet, Text, View, ScrollView} from 'react-native';
+import React, {Component, useState} from 'react';
+import {Alert, Button, Image, StyleSheet, Text, View, ScrollView, TextInput, SafeAreaView} from 'react-native';
 import { bindActionCreators,Dispatch } from 'redux'
 import {connect} from 'react-redux'
 import {StackNavigationProp } from '@react-navigation/stack';
@@ -18,9 +18,17 @@ interface Props {
 class KittenList extends Component<Props> {  
     constructor(props:Props) {
         super(props);
+        this.onChange = this.onChange.bind(this)
     }
-    async componentDidMount() {
-      this.props.dispatchActions.fetchKittens(1)
+    state = {
+      value:''
+    }
+
+    onChange(e:string){
+      const re = /^[0-9\b]+$/;
+      if (e === '' || re.test(e)) {
+         this.setState({value: e})
+      }
     }
 
     renderKittens = (kittensState: Props["state"]["kittens"]["kittensArray"]) => {
@@ -40,6 +48,16 @@ class KittenList extends Component<Props> {
       )
     }
 
+    renderLoading = () => {
+      return(
+        <View>
+          <Text>
+            loading
+          </Text>
+        </View>
+      )
+    }
+
     render() { 
       const kittensObject = this.props.state.kittens
       return (
@@ -49,7 +67,7 @@ class KittenList extends Component<Props> {
                   <View style={styles.filterButtons}>
                       <Button
                           title="30"
-                          onPress={ () => {Alert.alert("30")}}
+                          onPress={ () => {this.props.dispatchActions.fetchKittens(30)}}
                       />
                   </View>
                 </View>
@@ -57,7 +75,7 @@ class KittenList extends Component<Props> {
                   <View style={styles.filterButtons}>
                       <Button
                           title="50"
-                          onPress={ () => {Alert.alert("50")}}
+                          onPress={ () => {this.props.dispatchActions.fetchKittens(50)}}
                       />
                   </View>
                 </View>
@@ -65,15 +83,26 @@ class KittenList extends Component<Props> {
                   <View style={styles.filterButtons}>
                       <Button
                           title="100"
-                          onPress={ () => {Alert.alert("100")}}
+                          onPress={ () => {this.props.dispatchActions.fetchKittens(100)}}
                       />
                   </View>
-                </View>
+                </View>         
             </View>
+            <TextInput  
+                  placeholder="number"  
+                  underlineColorAndroid='transparent'  
+                  style={styles.TextInputStyle}  
+                  keyboardType={'numeric'}
+                  onChangeText={this.onChange}
+            /> 
+            <Button
+              title="ok"
+              onPress= { () => {this.props.dispatchActions.fetchKittens(Number(this.state.value))}}
+            />
             {
-              !kittensObject.loading && kittensObject.kittensArray.length ?
+              !kittensObject.loading ?
                   this.renderKittens(kittensObject.kittensArray)
-                : <View></View>
+                : this.renderLoading()
             }
             <View>
             </View>
@@ -82,6 +111,7 @@ class KittenList extends Component<Props> {
     }
 
 };
+
 const mapStateToProps = (state:allReducersState) => {
   return {
     state: state
@@ -108,5 +138,19 @@ const styles = StyleSheet.create({
     },
     separator: {
         paddingRight:20,
-    }
+    },
+    input: {
+      height: 40,
+      margin: 12,
+      borderWidth: 1,
+      padding: 10,
+    },
+    TextInputStyle: {  
+      textAlign: 'center',  
+      height: 40,  
+      borderRadius: 10,  
+      borderWidth: 2,  
+      borderColor: '#009688',  
+      marginBottom: 10  
+    },
 });

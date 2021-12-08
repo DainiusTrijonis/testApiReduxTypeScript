@@ -1,4 +1,4 @@
-import {SET_KITTENS} from '../actions/actionTypes'
+import {SET_KITTENS,SET_LOADING} from '../actions/actionTypes'
 export interface Kitten {
     Name:string,
     Image:string,
@@ -9,7 +9,7 @@ export interface KITTENSSTATE  {
 }
 const INITIALSTATE:KITTENSSTATE = {
     kittensArray: new Array<Kitten>(),
-    loading:true,
+    loading:false,
 }
 
 export const kittensReducer = (state = INITIALSTATE,  action: { type: string, payload: Kitten[]}) => {
@@ -17,6 +17,8 @@ export const kittensReducer = (state = INITIALSTATE,  action: { type: string, pa
         case SET_KITTENS: 
             //console.log(action.payload[0].Name)
             return {kittensArray: action.payload, loading:false}
+        case SET_LOADING:
+            return {kittensArray: action.payload, loading:true}
         default:
             return state   
     }

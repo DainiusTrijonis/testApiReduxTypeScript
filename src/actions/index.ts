@@ -29,6 +29,7 @@ function setCount(data:number) {
 
 export function fetchKittens(number:number) {
   return async function(dispatch:Dispatch) {
+    dispatch(setLoading())
     await api.getKittens(number).then(data => {
       dispatch(setKittens(data))
     }).catch((err) => {
@@ -41,5 +42,13 @@ function setKittens(data:Kitten[]) {
   return {
     type: actionTypes.SET_KITTENS,
     payload: data
+  }
+}
+
+function setLoading() {
+  const data:Kitten[] = new Array<Kitten>()
+  return {
+    type: actionTypes.SET_LOADING,
+    payload:data
   }
 }
